@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "liquid-example-api"
+version = "0.1.0"
+description = "Backend API service for the example chat app implemented using rstore"
+authors = ["hacksparr0w <hacksparr0w@protonmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.109.0"
+pydantic = "^2.5.3"
+uvicorn = {extras = ["standard"], version = "^0.27.0"}
+websockets = "^12.0"
+liquid-redis = {git = "https://github.com/thewhitepill/liquid_redis"}
+redis = "^5.0.3"
+pydantic-core = "^2.16.3"
+pyrsistent = "^0.20.0"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.8.0"
+ruff = "^0.1.14"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
