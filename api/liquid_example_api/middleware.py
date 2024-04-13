@@ -39,8 +39,8 @@ def websocket_middleware(store):
 
     def get_peer_session_ids(current_session_id, channel):
         return [
-            session_id for session_id in channel.users
-            if session_id != current_session_id
+            user.session_id for user in channel.users.values()
+            if user.session_id != current_session_id
         ]
 
     async def handle_client_message(channel_name, user, protocol_message):

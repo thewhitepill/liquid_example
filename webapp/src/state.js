@@ -1,3 +1,7 @@
+class InvalidStateError extends Error {
+
+};
+
 const initialStateFactory = () => ({
   connected: false,
   channel: null,
@@ -5,5 +9,7 @@ const initialStateFactory = () => ({
 });
 
 export {
+  InvalidStateError,
+
   initialStateFactory
 };
