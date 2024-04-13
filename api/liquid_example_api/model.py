@@ -109,6 +109,3 @@ class Channel(BaseModel, frozen=True):
             users=tuple(user.display() for user in self.users.values()),
             messages=self.messages
         )
-
-    def __iter__(self):
-        return iter(self.users)

@@ -31,7 +31,7 @@ def websocket_middleware(store):
     clients = {}
 
     async def unicast(session_id, message):
-        await clients[session_id].send_json(dict(message))
+        await clients[session_id].send_text(message.model_dump_json())
 
     async def multicast(session_ids, message):
         futures = [unicast(session_id, message) for session_id in session_ids]
@@ -39,7 +39,7 @@ def websocket_middleware(store):
 
     def get_peer_session_ids(current_session_id, channel):
         return [
-            session_id for session_id, _ in channel
+            session_id for session_id in channel.users
             if session_id != current_session_id
         ]
 

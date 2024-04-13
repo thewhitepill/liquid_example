@@ -1,5 +1,5 @@
 const initialStateFactory = () => ({
-  isRegistered: false,
+  connected: false,
   channel: null,
   user: null
 });

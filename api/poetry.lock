@@ -189,7 +189,7 @@ redis = "^5.0.1"
 type = "git"
 url = "https://github.com/thewhitepill/liquid_redis"
 reference = "HEAD"
-resolved_reference = "18dae8157ff4559047dc085cfd137679d6340f54"
+resolved_reference = "9e04a0f43b1fe0c758eb178f96037b942268e5fa"
 
 [[package]]
 name = "mypy"

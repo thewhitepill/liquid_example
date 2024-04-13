@@ -59,7 +59,7 @@ async def handle_shutdown() -> None:
     await redis_client.close()
 
 
-@app.websocket("/channel/{channel_name}/user/{user_name}")
+@app.websocket("/channels/{channel_name}/users/{user_name}")
 async def connect(
     client: WebSocket,
     channel_name: str,
