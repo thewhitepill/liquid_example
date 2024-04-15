@@ -37,10 +37,13 @@ def websocket_middleware(store):
         futures = [unicast(session_id, message) for session_id in session_ids]
         await asyncio.gather(*futures)
 
+    def get_user_session_ids(channel):
+        return [user.session_id for user in channel.users.values()]
+
     def get_peer_session_ids(current_session_id, channel):
         return [
-            user.session_id for user in channel.users.values()
-            if user.session_id != current_session_id
+            session_id for session_id in get_user_session_ids(channel)
+            if session_id != current_session_id
         ]
 
     async def handle_client_message(channel_name, user, protocol_message):
@@ -59,7 +62,7 @@ def websocket_middleware(store):
         )
 
         channel = state.get_channel(channel_name)
-        session_ids = channel.users.keys()
+        session_ids = get_user_session_ids(channel)
 
         await multicast(
             session_ids,

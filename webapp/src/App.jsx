@@ -61,7 +61,7 @@ const App = ({ config }) => {
 
   useEffect(
     () => {
-      if (state.connected && state.channel) {
+      if (state.connected && state.channel && client.current) {
         client.current.onmessage = event => {
           const message = JSON.parse(event.data);
 
@@ -123,7 +123,7 @@ const App = ({ config }) => {
       user={state.user}
       onMessageSend={handleMessageSend}
     />
-  )
+  );
 };
 
 export default App;

@@ -8,8 +8,23 @@ const initialStateFactory = () => ({
   user: null
 });
 
+const testStateFactory = () => ({
+  connected: true,
+  channel: {
+    name: "test",
+    messages: [
+      { sender_name: "asdf", content: "hiii" },
+      { sender_name: "asdf", content: "hiii" }
+    ],
+    users: [
+      { name: "asdf" },
+      { name: "asdf" }
+    ]
+  }
+});
+
 export {
   InvalidStateError,
 
-  initialStateFactory
+  testStateFactory as initialStateFactory
 };
