@@ -1,5 +1,17 @@
+html {
+  cursor: default;
+}
+
 html, body, #app {
   height: 100%
+}
+
+dialog button {
+  float: right;
+}
+
+.nes-btn {
+  cursor: pointer;
 }
 
 .chat-page {
@@ -91,6 +103,8 @@ html, body, #app {
 }
 
 .chat-page > section > main > .controls > textarea {
+  font-size: 12px;
+
   resize: none;
 }
 

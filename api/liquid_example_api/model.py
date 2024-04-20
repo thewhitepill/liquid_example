@@ -90,6 +90,13 @@ class Channel(BaseModel, frozen=True):
             }
         )
 
+    def discard_users(self) -> Channel:
+        return self.copy(
+            update={
+                "users": pmap()
+            }
+        )
+
     def get_user(self, name: str) -> User:
         if name not in self.users:
             raise UserNotFoundError

@@ -5,7 +5,7 @@ from enum import StrEnum, auto
 from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, Field
-from pyrsistent import PMap, pmap
+from pyrsistent import PMap, pmap, ny
 
 from .model import (
     Channel,
@@ -21,6 +21,7 @@ from .model import (
 class AppActionType(StrEnum):
     ADD_MESSAGE = auto()
     ADD_USER = auto()
+    CLEAN_UP_CHANNELS = auto()
     REMOVE_USER = auto()
 
 
@@ -52,10 +53,18 @@ class RemoveUserAction(BaseModel):
     session_id: str
 
 
+class CleanUpChannelsAction(BaseModel):
+    type: Annotated[
+        Literal[AppActionType.CLEAN_UP_CHANNELS],
+        Field(default=AppActionType.CLEAN_UP_CHANNELS)
+    ]
+
+
 AppAction = Annotated[
     Union[
         AddMessageAction,
         AddUserAction,
+        CleanUpChannelsAction,
         RemoveUserAction
     ],
     Field(discriminator="type")
@@ -97,6 +106,18 @@ class AppState(BaseModel, frozen=True):
             users=self.users.set(data.session_id, user)
         )
 
+    def clean_up_channels(self) -> AppState:
+        channels = self.channels.transform(
+            [ny],
+            lambda channel: channel.discard_users()
+        )
+
+        return self.copy(
+            update={
+                "channels": channels
+            }
+        )
+
     def get_channel(self, name: str) -> Channel:
         if name not in self.channels:
             raise ChannelNotFoundError
@@ -116,10 +137,7 @@ class AppState(BaseModel, frozen=True):
         channel = self.channels[user.channel_name] \
             .discard_user(user.name)
 
-        if not channel.users:
-            channels = self.channels.discard(user.channel_name)
-        else:
-            channels = self.channels
+        channels = self.channels.set(user.channel_name, channel)
 
         return AppState(channels=channels, users=users)
 
@@ -131,6 +149,9 @@ def app_reducer(state: AppState, action: AppAction) -> AppState:
 
         case AddUserAction(data=data):
             return state.add_user(data)
+
+        case CleanUpChannelsAction():
+            return state.clean_up_channels()
 
         case RemoveUserAction(session_id=session_id):
             return state.remove_user(session_id)

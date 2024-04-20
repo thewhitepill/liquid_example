@@ -1,7 +1,7 @@
-import React from "react";
+import clsx from "clsx";
 import { useForm } from "react-hook-form";
 
-const LauncherPage = ({ onLaunch }) => {
+const LauncherPage = ({ connecting, onLaunch }) => {
   const { register, handleSubmit } = useForm();
 
   return (
@@ -15,7 +15,14 @@ const LauncherPage = ({ onLaunch }) => {
           <label for="channelName">Channel</label>
           <input
             {...register("channelName")}
-            className="nes-input"
+            className={
+              clsx(
+                "nes-input",
+                {
+                  "is-disabled": connecting
+                }
+              )
+            }
             defaultValue=""
           />
         </div>
@@ -23,14 +30,31 @@ const LauncherPage = ({ onLaunch }) => {
           <label for="userName">User</label>
           <input
             {...register("userName")}
-            className="nes-input"
+            className={
+              clsx(
+                "nes-input",
+                {
+                  "is-disabled": connecting
+                }
+              )
+            }
             defaultValue=""
           />
         </div>
         <input
           type="submit"
-          class="nes-btn is-primary"
-          value="Join"
+          className={
+            clsx(
+              "nes-btn",
+              {
+                "is-primary": !connecting,
+                "is-disabled": connecting
+              }
+            )
+          }
+          value={
+            connecting ? "Connecting..." : "Connect"
+          }
         />
       </form>
     </div>

@@ -8,7 +8,7 @@ from liquid_redis import redis_store_factory
 
 from .config import config
 from .middleware import WebsocketClientConnectAction, websocket_middleware
-from .state import AppState, app_reducer
+from .state import AppState, CleanUpChannelsAction, app_reducer
 
 
 redis_client = redis.asyncio.from_url(config.redis.url)
@@ -51,6 +51,7 @@ app.add_middleware(
 async def handle_startup() -> None:
     await redis_client.ping()
     await store.bind(redis_client, config.redis.namespace)
+    await store.dispatch(CleanUpChannelsAction())
 
 
 @app.on_event("shutdown")

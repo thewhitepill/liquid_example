@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import ChatPage from "./ChatPage";
+import ErrorDialog from "./ErrorDialog";
 import LauncherPage from "./LauncherPage";
 import {
   ClientMessageType,
@@ -15,8 +16,22 @@ const App = ({ config }) => {
   const client = useRef(null);
   const [state, setState] = useState(initialStateFactory);
 
+  const closeErrorDialog = () => {
+    setState(
+      state => ({
+        ...state,
+        error: false,
+        errorMessage: null
+      })
+    );
+  };
+
   const handleMessageSend = content => {
     ensure(state.connected, InvalidStateError);
+
+    if (!client.current) {
+      return;
+    }
 
     const message = {
       type: ClientMessageType.MESSAGE_SEND_REQUEST,
@@ -30,11 +45,20 @@ const App = ({ config }) => {
     const url = `${config.api.url}/channels/${channelName}/users/${userName}`;
     client.current = new WebSocket(url);
 
-    client.current.onopen = () => {
+    setState(
+      state => ({
+        ...state,
+        connecting: true
+      })
+    );
+
+    client.current.onerror = event => {
       setState(
         state => ({
           ...state,
-          connected: true
+          connecting: false,
+          error: true,
+          errorMessage: "Failed to connect to the server."
         })
       );
     };
@@ -49,6 +73,8 @@ const App = ({ config }) => {
         setState(
           state => ({
             ...state,
+            connecting: false,
+            connected: true,
             channel,
             user
           })
@@ -75,7 +101,7 @@ const App = ({ config }) => {
             };
 
             setState({ ...state, channel });
-          } else if (message.type === ServerMessageType.USER_JOINED) {
+          } else if (message.type === ServerMessageType.USER_JOIN) {
             const { user } = message;
             const channel = {
               ...state.channel,
@@ -86,7 +112,7 @@ const App = ({ config }) => {
             };
 
             setState({ ...state, channel });
-          } else if (message.type === ServerMessageType.USER_LEFT) {
+          } else if (message.type === ServerMessageType.USER_LEAVE) {
             const { user } = message;
             const channel = {
               ...state.channel,
@@ -105,24 +131,29 @@ const App = ({ config }) => {
     [state]
   );
 
-  if (!state.connected) {
-    return (
-      <LauncherPage onLaunch={handleLaunch} />
-    )
-  }
-
-  if (!state.channel) {
-    return (
-      <div>Connecting...</div>
-    )
-  }
+  const content = state.connected
+    ? (
+      <ChatPage
+        channel={state.channel}
+        user={state.user}
+        onMessageSend={handleMessageSend}
+      />
+    ) : (
+      <LauncherPage
+        connecting={state.connecting}
+        onLaunch={handleLaunch}
+      />
+    );
 
   return (
-    <ChatPage
-      channel={state.channel}
-      user={state.user}
-      onMessageSend={handleMessageSend}
-    />
+    <>
+      {content}
+      <ErrorDialog
+        open={state.error}
+        onClose={closeErrorDialog}
+        message={state.errorMessage}
+      />
+    </>
   );
 };
 

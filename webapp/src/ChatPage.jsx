@@ -7,6 +7,13 @@ const ChatPage = ({
 }) => {
   const messageInputRef = useRef(null);
 
+  const handleMessageInputKeyDown = event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleMessageSendButtonClick();
+    }
+  };
+
   const handleMessageSendButtonClick = () => {
     const content = messageInputRef.current.value;
     onMessageSend(content);
@@ -17,7 +24,7 @@ const ChatPage = ({
   return (
     <div className="chat-page">
       <header>
-          <h2>#{channel.name}</h2>
+        <h2>#{channel.name}</h2>
       </header>
       <section>
         <main>
@@ -35,6 +42,7 @@ const ChatPage = ({
               ref={messageInputRef}
               class="nes-textarea"
               placeholder="Type a message..."
+              onKeyDown={handleMessageInputKeyDown}
             />
             <button
               className="nes-btn is-primary"
@@ -45,7 +53,9 @@ const ChatPage = ({
           </div>
         </main>
         <aside>
-          <h3>{`Online Users (${channel.users.length})`}</h3>
+          <h3>
+            {`Online Users (${channel.users.length})`}
+          </h3>
           <ul>
             {channel.users.map(({ name }) => (
               <li key={name}>

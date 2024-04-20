@@ -5,8 +5,8 @@ class ProtocolError extends Error {
 const ServerMessageType = {
   CHANNEL_STATE: "channel_state",
   MESSAGE_BROADCAST: "message_broadcast",
-  USER_JOINED: "user_joined",
-  USER_LEFT: "user_left"
+  USER_JOIN: "user_join",
+  USER_LEAVE: "user_leave"
 };
 
 const ClientMessageType = {
